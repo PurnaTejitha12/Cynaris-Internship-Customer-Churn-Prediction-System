@@ -1,3 +1,11 @@
+# Customer Churn Prediction System
+
+## 🚀 Live Demo
+
+https://cynaris-internship-customer-churn.onrender.com/
+
+
+
 # Cynaris Internship - Customer Churn Prediction System
 
 ## Project Overview
@@ -172,3 +180,4 @@ The following files were created:
 ```text
 best_churn_model.pkl
 scaler.pkl
+
