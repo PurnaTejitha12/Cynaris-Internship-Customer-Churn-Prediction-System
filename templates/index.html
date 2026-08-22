@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Customer Churn Prediction</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a, #1e3a8a, #312e81);
+            color: #1e293b;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        /* HEADER */
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 17px;
+            color: #cbd5e1;
+        }
+
+        /* MAIN CARD */
+
+        .main-card {
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            font-size: 22px;
+            margin-bottom: 25px;
+            color: #1e3a8a;
+            border-left: 5px solid #3b82f6;
+            padding-left: 12px;
+        }
+
+        /* FORM GRID */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #334155;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 13px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+        }
+
+        /* BUTTON */
+
+        .button-container {
+            text-align: center;
+            margin-top: 35px;
+        }
+
+        .predict-button {
+            width: 60%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            color: white;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .predict-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(37, 99, 235, 0.4);
+        }
+
+        .predict-button:active {
+            transform: translateY(0);
+        }
+
+        /* RESULT */
+
+        .result {
+            margin-top: 35px;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+        }
+
+        .result-title {
+            font-size: 16px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .prediction {
+            font-size: 30px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .probability {
+            font-size: 20px;
+            color: #334155;
+        }
+
+        /* CHURN RESULT */
+
+        .churn {
+            border-color: #fecaca;
+            background: #fef2f2;
+        }
+
+        .churn .prediction {
+            color: #dc2626;
+        }
+
+        /* NO CHURN RESULT */
+
+        .no-churn {
+            border-color: #bbf7d0;
+            background: #f0fdf4;
+        }
+
+        .no-churn .prediction {
+            color: #16a34a;
+        }
+
+        /* INFO SECTION */
+
+        .info-section {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .info-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .info-card .icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .info-card h3 {
+            font-size: 16px;
+            color: #1e3a8a;
+            margin-bottom: 5px;
+        }
+
+        .info-card p {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* FOOTER */
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #cbd5e1;
+            font-size: 14px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 768px) {
+
+            body {
+                padding: 20px 10px;
+            }
+
+            .header h1 {
+                font-size: 30px;
+            }
+
+            .main-card {
+                padding: 22px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .predict-button {
+                width: 100%;
+            }
+
+            .info-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <h1>🔮 Customer Churn Prediction</h1>
+
+        <p>
+            Machine Learning Based Customer Retention Intelligence System
+        </p>
+
+    </div>
+
+
+    <!-- MAIN CARD -->
+
+    <div class="main-card">
+
+
+        <h2 class="section-title">
+            Customer Information
+        </h2>
+
+
+        <form action="/predict" method="POST">
+
+
+            <div class="form-grid">
+
+
+                <!-- TENURE -->
+
+                <div class="form-group">
+
+                    <label>
+                        📅 Tenure (Months)
+                    </label>
+
+                    <input
+                        type="number"
+                        name="tenure"
+                        placeholder="Example: 12"
+                        min="0"
+                        required>
+
+                </div>
+
+
+                <!-- MONTHLY CHARGES -->
+
+                <div class="form-group">
+
+                    <label>
+                        💰 Monthly Charges
+                    </label>
+
+                    <input
+                        type="number"
+                        step="0.01"
+                        name="monthly_charges"
+                        placeholder="Example: 80.50"
+                        min="0"
+                        required>
+
+                </div>
+
+
+                <!-- TOTAL CHARGES -->
+
+                <div class="form-group">
+
+                    <label>
+                        💳 Total Charges
+                    </label>
+
+                    <input
+                        type="number"
+                        step="0.01"
+                        name="total_charges"
+                        placeholder="Example: 960.00"
+                        min="0"
+                        required>
+
+                </div>
+
+
+                <!-- SUPPORT CALLS -->
+
+                <div class="form-group">
+
+                    <label>
+                        📞 Support Calls
+                    </label>
+
+                    <input
+                        type="number"
+                        name="support_calls"
+                        placeholder="Example: 3"
+                        min="0"
+                        required>
+
+                </div>
+
+
+                <!-- CONTRACT -->
+
+                <div class="form-group">
+
+                    <label>
+                        📄 Contract Type
+                    </label>
+
+                    <select name="contract" required>
+
+                        <option value="Month-to-month">
+                            Month-to-month
+                        </option>
+
+                        <option value="One year">
+                            One year
+                        </option>
+
+                        <option value="Two year">
+                            Two year
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- PAYMENT -->
+
+                <div class="form-group">
+
+                    <label>
+                        💰 Payment Method
+                    </label>
+
+                    <select
+                        name="payment_method"
+                        required>
+
+                        <option value="Credit">
+                            Credit
+                        </option>
+
+                        <option value="Debit">
+                            Debit
+                        </option>
+
+                        <option value="UPI">
+                            UPI
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- INTERNET -->
+
+                <div class="form-group">
+
+                    <label>
+                        🌐 Internet Service
+                    </label>
+
+                    <select
+                        name="internet_service"
+                        required>
+
+                        <option value="DSL">
+                            DSL
+                        </option>
+
+                        <option value="Fiber">
+                            Fiber
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- TECH SUPPORT -->
+
+                <div class="form-group">
+
+                    <label>
+                        🛠️ Technical Support
+                    </label>
+
+                    <select
+                        name="tech_support"
+                        required>
+
+                        <option value="Yes">
+                            Yes
+                        </option>
+
+                        <option value="No">
+                            No
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- ONLINE SECURITY -->
+
+                <div class="form-group">
+
+                    <label>
+                        🔐 Online Security
+                    </label>
+
+                    <select
+                        name="online_security"
+                        required>
+
+                        <option value="Yes">
+                            Yes
+                        </option>
+
+                        <option value="No">
+                            No
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- BUTTON -->
+
+            <div class="button-container">
+
+                <button
+                    type="submit"
+                    class="predict-button">
+
+                    🚀 Predict Customer Churn
+
+                </button>
+
+            </div>
+
+
+        </form>
+
+
+        <!-- RESULT -->
+
+        {% if prediction %}
+
+        <div class="result
+            {% if prediction == 'Churn' %}
+                churn
+            {% else %}
+                no-churn
+            {% endif %}
+        ">
+
+            <div class="result-title">
+                Machine Learning Prediction
+            </div>
+
+            <div class="prediction">
+
+                {% if prediction == 'Churn' %}
+                    ⚠️ {{ prediction }}
+                {% else %}
+                    ✅ {{ prediction }}
+                {% endif %}
+
+            </div>
+
+            <div class="probability">
+
+                Churn Probability:
+                <strong>{{ probability }}%</strong>
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- INFORMATION CARDS -->
+
+        <div class="info-section">
+
+
+            <div class="info-card">
+
+                <div class="icon">
+                    🤖
+                </div>
+
+                <h3>
+                    Machine Learning
+                </h3>
+
+                <p>
+                    Uses a trained classification model
+                    to predict customer churn.
+                </p>
+
+            </div>
+
+
+            <div class="info-card">
+
+                <div class="icon">
+                    📊
+                </div>
+
+                <h3>
+                    Probability
+                </h3>
+
+                <p>
+                    Provides the estimated probability
+                    of customer churn.
+                </p>
+
+            </div>
+
+
+            <div class="info-card">
+
+                <div class="icon">
+                    🎯
+                </div>
+
+                <h3>
+                    Customer Retention
+                </h3>
+
+                <p>
+                    Helps businesses identify customers
+                    at risk of leaving.
+                </p>
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    <!-- FOOTER -->
+
+    <div class="footer">
+
+        Cynaris Internship Project • Customer Churn Prediction System
+
+    </div>
+
+
+</div>
+
+</body>
+
+</html>
